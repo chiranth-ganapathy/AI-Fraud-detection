@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  voice-detection:
+    build:
+      context: .
+      dockerfile: Dockerfile.voice
+    container_name: ai-voice-detection
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - API_KEY=sk_test_123456789
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  honeypot:
+    build:
+      context: .
+      dockerfile: Dockerfile.honeypot
+    container_name: agentic-honeypot
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - API_KEY=sk_test_123456789
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  default:
+    name: fraud-detection-network
